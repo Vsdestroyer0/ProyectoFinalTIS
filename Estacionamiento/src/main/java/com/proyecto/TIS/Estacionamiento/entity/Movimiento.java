@@ -17,13 +17,9 @@ import java.time.LocalDateTime;
 @Table(name = "movimiento")
 public class Movimiento {
     
-    private String claveU;
-    private String placa;
     private Integer idSpace;
-    
     private Double tarHora;
     private Double costoT;
-    
     private java.time.LocalDateTime tEntrada;
     private java.time.LocalDateTime tSalida;
     private java.time.LocalDateTime tCreacion;
@@ -33,22 +29,17 @@ public class Movimiento {
     
     @Id
     private Integer idMove;
+    
+    private Integer idVehiculo;
 
-    public String getClaveU() {
-        return claveU;
+    public Integer getIdVehiculo() {
+        return idVehiculo;
     }
 
-    public void setClaveU(String claveU) {
-        this.claveU = claveU;
+    public void setIdVehiculo(Integer idVehiculo) {
+        this.idVehiculo = idVehiculo;
     }
 
-    public String getPlaca() {
-        return placa;
-    }
-
-    public void setPlaca(String placa) {
-        this.placa = placa;
-    }
 
     public Integer getIdSpace() {
         return idSpace;
