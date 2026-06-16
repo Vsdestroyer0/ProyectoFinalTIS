@@ -11,7 +11,7 @@
 	<groupId>com.proyecto.TIS</groupId>
 	<artifactId>Estacionamiento</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
+	<name>Estacionamiento</name>
 	<description/>
 	<url/>
 	<licenses>
@@ -54,6 +54,12 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+	 <dependency>
+	  <groupId>ch.exense.step</groupId>
+	  <artifactId>step-framework-model</artifactId>
+	  <version>2.0.12</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 
 	<build>
