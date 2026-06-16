@@ -117,6 +117,7 @@ CREATE TABLE `vehiculo`  (
   `color` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `anio` int NOT NULL,
   `descripcion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `estatus` bit(1) NOT NULL DEFAULT b'1',
   PRIMARY KEY (`idVehiculo`) USING BTREE,
   INDEX `idModelo`(`idModelo` ASC) USING BTREE,
   CONSTRAINT `vehiculo_ibfk_1` FOREIGN KEY (`idModelo`) REFERENCES `modelo` (`idModelo`) ON DELETE RESTRICT ON UPDATE RESTRICT

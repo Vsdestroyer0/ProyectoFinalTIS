@@ -13,9 +13,17 @@ public class ProgramaEducativoEntity {
     @Column(nullable = false, length = 150)
     private String nombre;
 
-    public Integer getIdPrograma() { return idPrograma; }
-    public void setIdPrograma(Integer idPrograma) { this.idPrograma = idPrograma; }
+    public Integer getIdPrograma() {
+        return idPrograma;
+    }
+    public void setIdPrograma(Integer idPrograma) {
+        this.idPrograma = idPrograma;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombre() {
+        return nombre;
+    }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 }

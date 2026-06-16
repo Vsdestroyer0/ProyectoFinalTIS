@@ -113,7 +113,7 @@ CACHE 1
 -- Records of usuario (admin seed)
 -- admin password: Admin2024!
 -- ----------------------------
-INSERT INTO "public"."usuario" VALUES (1, 'Administrador', 'SICAE', NULL, 'ADMIN01', 'admin@sicae.edu.mx', NULL, 'admin', '$2a$10$kOs/guKI1ozK1YV3wcfZIe3gbQe3kdHnLazKo1sA4zAdDxHBlEZXS', true, 1, 2, 1, NOW(), NULL);
+INSERT INTO "public"."usuario" VALUES (1, 'Administrador', 'SICAE', NULL, 'ADMIN01', 'admin@sicae.edu.mx', NULL, 'admin', '$2a$10$rQFsAd8mb157WOlTQIYzQOEgRKrJKO3EfLXRCkbMnH6UM50smIDn6', true, 1, 2, 1, NOW(), NULL);
 
 -- ----------------------------
 -- Primary Key structure

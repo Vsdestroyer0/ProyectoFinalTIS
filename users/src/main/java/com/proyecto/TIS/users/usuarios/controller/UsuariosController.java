@@ -40,9 +40,10 @@ public class UsuariosController {
     }
 
     @GetMapping("/profile/{idUsuario}")
-    public ResponseEntity<?> perfUser(@PathVariable int idUsuario){
+    public ResponseEntity<?> perfUser(@PathVariable int idUsuario, @RequestHeader("Authorization") String authHeader){
         try {
-            PerfilUsuarioDTO user = usuariosService.perf(idUsuario);
+            String token = authHeader.substring(7);
+            PerfilUsuarioDTO user = usuariosService.perf(idUsuario, token);
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
             return ResponseEntity.status(400).body(e.getMessage());
@@ -50,9 +51,10 @@ public class UsuariosController {
     }
 
     @PutMapping("/{idUsuario}")
-    public ResponseEntity<?> editUser(@PathVariable int idUsuario, @RequestBody ActualizarUsuarioDTO editRequest) {
+    public ResponseEntity<?> editUser(@PathVariable int idUsuario, @RequestBody ActualizarUsuarioDTO editRequest, @RequestHeader("Authorization") String authHeader) {
         try {
-            String response = usuariosService.edit(idUsuario, editRequest);
+            String token = authHeader.substring(7);
+            String response = usuariosService.edit(idUsuario, editRequest, token);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(400).body(e.getMessage());
