@@ -16,6 +16,20 @@ services:
       - pgdata-usuarios:/var/lib/postgresql/data
     restart: always
 
+  # Spring Boot Microservice for Users
+  app-usuarios:
+    build: 
+      context: ./users
+      dockerfile: Dockerfile
+    container_name: sicae-app-usuarios
+    ports:
+      - "8083:8083"
+    environment:
+      - DB_HOST=db-usuarios
+    depends_on:
+      - db-usuarios
+    restart: always
+
   # Database for the Vehiculos Microservice (MySQL)
   db-vehiculos:
     image: docker.io/library/mysql:8.0
@@ -31,6 +45,20 @@ services:
       - mysql-vehiculos:/var/lib/mysql
     restart: always
 
+  # Spring Boot Microservice for Vehiculos
+  app-vehiculos:
+    build:
+      context: ./Vehiculos
+      dockerfile: Dockerfile
+    container_name: sicae-app-vehiculos
+    ports:
+      - "8084:8084"
+    environment:
+      - DB_HOST=db-vehiculos
+    depends_on:
+      - db-vehiculos
+    restart: always
+
   # Database for the Estacionamiento Microservice (MySQL)
   db-estacionamiento:
     image: docker.io/library/mysql:8.0
@@ -44,6 +72,21 @@ services:
     volumes:
       - ./Databases/Estacionamiento/sicaeestacionamiento.sql:/docker-entrypoint-initdb.d/init.sql:z
       - mysql-estacionamiento:/var/lib/mysql
+    restart: always
+
+  # Spring Boot Microservice for Estacionamiento
+  app-estacionamiento:
+    build:
+      context: ./Estacionamiento
+      dockerfile: Dockerfile
+    container_name: sicae-app-estacionamiento
+    ports:
+      - "8085:8085"
+    environment:
+      - DB_HOST=db-estacionamiento
+      - DB_PORT=3306
+    depends_on:
+      - db-estacionamiento
     restart: always
 
 volumes:

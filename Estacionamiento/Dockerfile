@@ -25,7 +25,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Ingresamos el puerto que vamos a exponer
-EXPOSE 8080
+EXPOSE 8085
 
 # ENTRYPOINT define el comando principal y el ciclo de vida del contenedor.
 # Al ejecutarse este contenedor, arrancará inmediatamente nuestra aplicación Java.
