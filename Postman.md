@@ -16,7 +16,7 @@ JSON
 
 ### Nota: 
 (Copia el token de la respuesta y pégalo en la pestaña "Authorization -> Bearer Token" de Postman para las peticiones que lo requieran)
-
+![alt text](image.png)
 ## Usuarios
 
 1. Registrar usuario
