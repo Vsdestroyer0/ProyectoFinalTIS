@@ -154,10 +154,52 @@ public class UsuariosService {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
+        // 1. Validar datos obligatorios
+        if (request.getNombre() == null || request.getNombre().trim().isEmpty()) {
+            throw new RuntimeException("El nombre es obligatorio");
+        }
+        if (request.getApellidoPaterno() == null || request.getApellidoPaterno().trim().isEmpty()) {
+            throw new RuntimeException("El apellido paterno es obligatorio");
+        }
+        if (request.getCorreo() == null || request.getCorreo().trim().isEmpty()) {
+            throw new RuntimeException("El correo es obligatorio");
+        }
+        if (request.getTelefono() == null || request.getTelefono().trim().isEmpty()) {
+            throw new RuntimeException("El teléfono es obligatorio");
+        }
+        if (request.getIdRol() <= 0) {
+            throw new RuntimeException("El rol es obligatorio y debe ser válido");
+        }
+        if (request.getIdTipoUsuario() <= 0) {
+            throw new RuntimeException("El tipo de usuario es obligatorio y debe ser válido");
+        }
+        if (request.getIdProgramaEducativo() <= 0) {
+            throw new RuntimeException("El programa educativo es obligatorio y debe ser válido");
+        }
+
+        // 2. Validar tamaño de los campos
+        if (request.getNombre().length() > 50) {
+            throw new RuntimeException("El nombre no puede exceder los 50 caracteres");
+        }
+        if (request.getApellidoPaterno().length() > 50) {
+            throw new RuntimeException("El apellido paterno no puede exceder los 50 caracteres");
+        }
+        if (request.getApellidoMaterno() != null && request.getApellidoMaterno().length() > 50) {
+            throw new RuntimeException("El apellido materno no puede exceder los 50 caracteres");
+        }
+        if (request.getCorreo().length() > 255) {
+            throw new RuntimeException("El correo no puede exceder los 255 caracteres");
+        }
+        if (request.getTelefono().length() != 10) {
+            throw new RuntimeException("El teléfono debe tener exactamente 10 caracteres");
+        }
+
+        // 3. Validar formato de correo
         if (!request.getCorreo().contains("@")) {
             throw new RuntimeException("El formato del correo es inválido");
         }
 
+        // 4. Validar mediante el correo electrónico que no existan usuarios repetidos
         if (usuariosRepository.correoUsado(request.getCorreo(), idUsuario)) {
             throw new RuntimeException("El correo ya está registrado en otra cuenta");
         }
@@ -165,6 +207,14 @@ public class UsuariosService {
         UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);
         if (user == null) {
             throw new RuntimeException("Usuario no encontrado");
+        }
+
+        // 5. Validar que el usuario que intenta editar sea el dueño del perfil o un administrador
+        String usernameToken = jwtUtils.getUserNameFromJwtToken(token);
+        int idRolToken = jwtUtils.getIdRolFromJwtToken(token);
+        
+        if (idRolToken != 1 && !user.getUsername().equals(usernameToken)) {
+            throw new RuntimeException("Acceso denegado: No tienes permiso para editar este perfil");
         }
 
         user.setIdRol(request.getIdRol());

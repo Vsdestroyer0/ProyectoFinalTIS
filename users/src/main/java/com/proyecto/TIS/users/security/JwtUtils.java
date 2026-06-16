@@ -44,6 +44,15 @@ public class JwtUtils {
         return claims.get("idRol", Integer.class);
     }
 
+    public String getUserNameFromJwtToken(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
     public boolean validateJwtToken(String token) {
         try {
             Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
