@@ -8,13 +8,15 @@ import java.util.List;
 @Repository
 public interface VehiculosRepository extends JpaRepository<VehiculosEntity, Integer> {
 
-    //todos los vehiculos de un usuario especifico
+    // Todos los vehículos de un usuario específico
     List<VehiculosEntity> findByIdUsuario(Integer idUsuario);
 
-    
-    //contar cuantos vehiculs activos tiene un usuarui
+    // Contar cuántos vehículos activos tiene un usuario
     long countByIdUsuarioAndEstatusTrue(Integer idUsuario);
 
-    // validad si la placa ya existe
+    // Validar si la placa ya existe
     boolean existsByPlaca(String placa);
+
+    // Validar placa al editar (excluyendo el propio vehículo)
+    boolean existsByPlacaAndIdVehiculoNot(String placa, Integer idVehiculo);
 }
