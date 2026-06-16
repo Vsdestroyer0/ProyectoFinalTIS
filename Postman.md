@@ -65,14 +65,14 @@ PUT
 
 Body: JSON
 {
-    "nombre": "nombre",
-    "apellidoPaterno": "apellidoPaterno",
-    "apellidoMaterno": "apellidoMaterno",
-    "correo": "correo",
-    "telefono": "telefono",
-    "idRol": 1,
-    "idTipoUsuario": 1,
-    "idProgramaEducativo": 1
+    "nombre": "Guillermo",
+    "apellidoPaterno": "Gongora",
+    "apellidoMaterno": "Mendoza",
+    "correo": "prueba9@gmail.com",
+    "telefono": "2223123123",
+    "idRol": 2,
+    "idTipoUsuario": 2,
+    "idProgramaEducativo": 6
 }
 
 6. Cambiar estatus del usuario

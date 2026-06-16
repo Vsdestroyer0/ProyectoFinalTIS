@@ -24,14 +24,24 @@ public class JwtUtils {
         return Keys.hmacShaKeyFor(keyBytes); 
     }
 
-    public String generateTokenFromUsername(String username, Integer idRol) {
+    public String generateTokenFromUsername(String username, Integer idRol, Integer idUsuario) {
         return Jwts.builder()
                 .subject(username)
                 .claim("idRol", idRol)
+                .claim("idUsuario", idUsuario)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(getSigningKey())
                 .compact();
+    }
+
+    public Integer getIdUsuarioFromJwtToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("idUsuario", Integer.class);
     }
 
     public Integer getIdRolFromJwtToken(String token) {
@@ -42,6 +52,15 @@ public class JwtUtils {
                 .getPayload();
         
         return claims.get("idRol", Integer.class);
+    }
+
+    public String getUserNameFromJwtToken(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
     }
 
     public boolean validateJwtToken(String token) {
