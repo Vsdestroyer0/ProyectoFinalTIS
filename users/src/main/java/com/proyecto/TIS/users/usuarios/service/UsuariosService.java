@@ -92,7 +92,11 @@ public class UsuariosService {
         return user.isEstatus();
     }
 
-    public PerfilUsuarioDTO perf(int idUsuario) {
+    public PerfilUsuarioDTO perf(int idUsuario, String token) {
+        if (!jwtUtils.validateJwtToken(token)) {
+            throw new RuntimeException("Acceso denegado: Token inválido o expirado");
+        }
+
         UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);
         if (user == null) {
             throw new RuntimeException("Usuario con id " + idUsuario + " no existe");
@@ -138,7 +142,11 @@ public class UsuariosService {
         );
     }
 
-    public String edit(int idUsuario, ActualizarUsuarioDTO request) {
+    public String edit(int idUsuario, ActualizarUsuarioDTO request, String token) {
+        if (!jwtUtils.validateJwtToken(token)) {
+            throw new RuntimeException("Acceso denegado: Token inválido o expirado");
+        }
+
         if (!request.getCorreo().contains("@")) {
             throw new RuntimeException("El formato del correo es inválido");
         }

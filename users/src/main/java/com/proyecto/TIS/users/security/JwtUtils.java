@@ -43,4 +43,13 @@ public class JwtUtils {
         
         return claims.get("idRol", Integer.class);
     }
+
+    public boolean validateJwtToken(String token) {
+        try {
+            Jwts.parser().verifyWith(getSigningKey()).build().parseSignedClaims(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

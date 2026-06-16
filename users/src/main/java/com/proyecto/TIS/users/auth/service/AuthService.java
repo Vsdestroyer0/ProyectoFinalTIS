@@ -36,7 +36,11 @@ public class AuthService {
         UsuariosEntity user = usuariosRepository.findByUsername(username);
 
         if (user == null) {
-            throw new RuntimeException("Usuario no encontrado o inactivo");
+            throw new RuntimeException("Usuario no encontrado");
+        }
+
+        if (!user.isEstatus()) {
+            throw new RuntimeException("El usuario está inactivo");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
