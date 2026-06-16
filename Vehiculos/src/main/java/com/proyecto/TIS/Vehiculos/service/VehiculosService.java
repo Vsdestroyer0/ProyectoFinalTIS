@@ -80,6 +80,17 @@ public class VehiculosService {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
+        if (idUsuario == null) {
+            throw new RuntimeException("El idUsuario es obligatorio");
+        }
+
+        Integer idUsuarioToken = jwtUtils.getIdUsuarioFromJwtToken(token);
+        Integer idRolToken = jwtUtils.getIdRolFromJwtToken(token);
+
+        if (idRolToken != 1 && !idUsuario.equals(idUsuarioToken)) {
+            throw new RuntimeException("Acceso denegado: No tienes permiso para ver los vehículos de otro usuario");
+        }
+
         List<VehiculosEntity> vehiculos = repository.findByIdUsuario(idUsuario);
         List<VehiculoResponseDTO> resultado = new ArrayList<>();
         for (VehiculosEntity v : vehiculos) {
@@ -94,21 +105,52 @@ public class VehiculosService {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
-        // Validar campos obligatorios
-        if (request.getIdUsuario() == null || request.getIdModelo() == null
-                || request.getPlaca() == null || request.getPlaca().isBlank()
-                || request.getColor() == null || request.getColor().isBlank()
-                || request.getAnio() == null) {
-            throw new RuntimeException("Faltan datos obligatorios: idUsuario, idModelo, placa, color y año son requeridos");
+        // 1. Validar campos obligatorios
+        if (request.getIdUsuario() == null) {
+            throw new RuntimeException("El idUsuario es obligatorio");
+        }
+        if (request.getIdModelo() == null) {
+            throw new RuntimeException("El idModelo es obligatorio");
+        }
+        if (request.getPlaca() == null || request.getPlaca().trim().isEmpty()) {
+            throw new RuntimeException("La placa es obligatoria");
+        }
+        if (request.getColor() == null || request.getColor().trim().isEmpty()) {
+            throw new RuntimeException("El color es obligatorio");
+        }
+        if (request.getAnio() == null) {
+            throw new RuntimeException("El año es obligatorio");
+        }
+        if (request.getDescripcion() == null || request.getDescripcion().trim().isEmpty()) {
+            throw new RuntimeException("La descripción es obligatoria");
         }
 
-        // Máximo 4 vehículos activos
+        // 2. Validar tamaño de los campos
+        if (request.getPlaca().length() > 7) {
+            throw new RuntimeException("La placa no puede exceder los 7 caracteres");
+        }
+        if (request.getColor().length() > 20) {
+            throw new RuntimeException("El color no puede exceder los 20 caracteres");
+        }
+        if (request.getDescripcion().length() > 255) {
+            throw new RuntimeException("La descripción no puede exceder los 255 caracteres");
+        }
+
+        // 3. Validar seguridad (BOLA)
+        Integer idUsuarioToken = jwtUtils.getIdUsuarioFromJwtToken(token);
+        Integer idRolToken = jwtUtils.getIdRolFromJwtToken(token);
+
+        if (idRolToken != 1 && !request.getIdUsuario().equals(idUsuarioToken)) {
+            throw new RuntimeException("Acceso denegado: No puedes registrar vehículos para otro usuario");
+        }
+
+        // 4. Máximo 4 vehículos activos
         long activos = repository.countByIdUsuarioAndEstatusTrue(request.getIdUsuario());
         if (activos >= 4) {
             throw new RuntimeException("El usuario ya tiene el límite de 4 vehículos activos");
         }
 
-        // Placa no duplicada
+        // 5. Placa no duplicada
         if (repository.existsByPlaca(request.getPlaca())) {
             throw new RuntimeException("Ya existe un vehículo registrado con la placa: " + request.getPlaca());
         }
@@ -120,7 +162,7 @@ public class VehiculosService {
         nuevo.setColor(request.getColor());
         nuevo.setAnio(request.getAnio());
         nuevo.setDescripcion(request.getDescripcion());
-        nuevo.setEstatus(true);
+        nuevo.setEstatus(true); // Activo por defecto
         nuevo.setClaveVehiculo(generarClaveVehiculo());
 
         repository.save(nuevo);
@@ -133,21 +175,60 @@ public class VehiculosService {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
+        // 1. Validar campos obligatorios
+        if (request.getIdUsuario() == null) {
+            throw new RuntimeException("El idUsuario es obligatorio");
+        }
+        if (request.getIdModelo() == null) {
+            throw new RuntimeException("El idModelo es obligatorio");
+        }
+        if (request.getPlaca() == null || request.getPlaca().trim().isEmpty()) {
+            throw new RuntimeException("La placa es obligatoria");
+        }
+        if (request.getColor() == null || request.getColor().trim().isEmpty()) {
+            throw new RuntimeException("El color es obligatorio");
+        }
+        if (request.getAnio() == null) {
+            throw new RuntimeException("El año es obligatorio");
+        }
+        if (request.getDescripcion() == null || request.getDescripcion().trim().isEmpty()) {
+            throw new RuntimeException("La descripción es obligatoria");
+        }
+
+        // 2. Validar tamaño de los campos
+        if (request.getPlaca().length() > 7) {
+            throw new RuntimeException("La placa no puede exceder los 7 caracteres");
+        }
+        if (request.getColor().length() > 20) {
+            throw new RuntimeException("El color no puede exceder los 20 caracteres");
+        }
+        if (request.getDescripcion().length() > 255) {
+            throw new RuntimeException("La descripción no puede exceder los 255 caracteres");
+        }
+
         VehiculosEntity vehiculo = repository.findById(idVehiculo).orElse(null);
         if (vehiculo == null) {
             throw new RuntimeException("Vehículo no encontrado");
         }
 
-        // Solo puede editar su propio vehículo
-        if (!vehiculo.getIdUsuario().equals(request.getIdUsuario())) {
+        // 3. Validar seguridad (BOLA)
+        Integer idUsuarioToken = jwtUtils.getIdUsuarioFromJwtToken(token);
+        Integer idRolToken = jwtUtils.getIdRolFromJwtToken(token);
+
+        if (idRolToken != 1 && !vehiculo.getIdUsuario().equals(idUsuarioToken)) {
             throw new RuntimeException("Acceso denegado: solo puedes editar tus propios vehículos");
         }
 
-        // Placa no duplicada (excluyendo el propio vehículo)
+        if (idRolToken != 1 && !request.getIdUsuario().equals(idUsuarioToken)) {
+            throw new RuntimeException("Acceso denegado: no puedes transferir el vehículo a otro usuario");
+        }
+
+        // 4. Placa no duplicada (excluyendo el propio vehículo)
         if (repository.existsByPlacaAndIdVehiculoNot(request.getPlaca(), idVehiculo)) {
             throw new RuntimeException("Ya existe otro vehículo con la placa: " + request.getPlaca());
         }
 
+        vehiculo.setIdUsuario(request.getIdUsuario());
         vehiculo.setIdModelo(request.getIdModelo());
         vehiculo.setPlaca(request.getPlaca().toUpperCase());
         vehiculo.setColor(request.getColor());
@@ -164,14 +245,36 @@ public class VehiculosService {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
+        if (idVehiculo == null) {
+            throw new RuntimeException("El idVehiculo es obligatorio");
+        }
+        if (idUsuario == null) {
+            throw new RuntimeException("El idUsuario es obligatorio");
+        }
+
         VehiculosEntity vehiculo = repository.findById(idVehiculo).orElse(null);
         if (vehiculo == null) {
             throw new RuntimeException("Vehículo no encontrado");
         }
 
-        // Solo puede cambiar estatus de su propio vehículo
+        // Validar seguridad (BOLA)
+        Integer idUsuarioToken = jwtUtils.getIdUsuarioFromJwtToken(token);
+        Integer idRolToken = jwtUtils.getIdRolFromJwtToken(token);
+
+        if (idRolToken != 1 && !idUsuario.equals(idUsuarioToken)) {
+            throw new RuntimeException("Acceso denegado: no tienes permiso para cambiar el estatus de vehículos de otro usuario");
+        }
+
         if (!vehiculo.getIdUsuario().equals(idUsuario)) {
-            throw new RuntimeException("Acceso denegado: solo puedes cambiar el estatus de tus propios vehículos");
+            throw new RuntimeException("Acceso denegado: el vehículo no pertenece al usuario especificado");
+        }
+
+        // Si se va a activar, validar que no tenga ya 4 vehículos activos
+        if (!vehiculo.getEstatus()) {
+            long activos = repository.countByIdUsuarioAndEstatusTrue(idUsuario);
+            if (activos >= 4) {
+                throw new RuntimeException("El usuario ya tiene el límite de 4 vehículos activos");
+            }
         }
 
         vehiculo.setEstatus(!vehiculo.getEstatus());

@@ -47,7 +47,7 @@ public class AuthService {
             throw new RuntimeException("Contraseña inválida");
         }
 
-        String token = jwtUtils.generateTokenFromUsername(user.getUsername(), user.getIdRol());
+        String token = jwtUtils.generateTokenFromUsername(user.getUsername(), user.getIdRol(), user.getIdUsuario());
         
         // Forma legible de construir el nombre completo
         String nombreCompleto = user.getNombre() + " " + user.getApellidoPaterno();

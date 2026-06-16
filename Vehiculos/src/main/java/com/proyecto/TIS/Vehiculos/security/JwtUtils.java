@@ -38,6 +38,15 @@ public class JwtUtils {
         return claims.get("idRol", Integer.class);
     }
 
+    public Integer getIdUsuarioFromJwtToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("idUsuario", Integer.class);
+    }
+
     public String getUsernameFromJwtToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
