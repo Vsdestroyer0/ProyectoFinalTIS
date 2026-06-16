@@ -10,10 +10,11 @@ public class RegistroUsuarioDTO {
     private int idRol;
     private int idTipoUsuario;
     private int idProgramaEducativo;
+    private String telefono;
 
     public RegistroUsuarioDTO() {}
 
-    public RegistroUsuarioDTO(String nombre, String apellidoPaterno, String apellidoMaterno, String correo, String username, String password, int idRol, int idTipoUsuario) {
+    public RegistroUsuarioDTO(String nombre, String apellidoPaterno, String apellidoMaterno, String correo, String username, String password, int idRol, int idTipoUsuario, String telefono) {
         this.nombre = nombre;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
@@ -22,6 +23,7 @@ public class RegistroUsuarioDTO {
         this.password = password;
         this.idRol = idRol;
         this.idTipoUsuario = idTipoUsuario;
+        this.telefono = telefono;
     }
 
     public int getIdRol() {
@@ -85,5 +87,12 @@ public class RegistroUsuarioDTO {
     }
     public void setIdProgramaEducativo(int idProgramaEducativo) {
         this.idProgramaEducativo = idProgramaEducativo;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 }

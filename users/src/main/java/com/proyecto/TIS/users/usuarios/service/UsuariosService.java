@@ -41,9 +41,15 @@ public class UsuariosService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public String register(RegistroUsuarioDTO request, String token) {
+        System.out.println("TELEFONO RECIBIDO EN DTO: " + request.getTelefono());
         int idRol = jwtUtils.getIdRolFromJwtToken(token);
         if (idRol != 1) {
             throw new RuntimeException("Acceso denegado: Solo los administradores pueden registrar usuarios");
+        }
+
+        // Fix de seguridad: Impedir que se creen cuentas con Rol de Administrador
+        if (request.getIdRol() == 1) {
+            throw new RuntimeException("Acceso denegado: No está permitido registrar nuevos usuarios con rol de Administrador");
         }
 
         if (!request.getCorreo().contains("@")) {
@@ -68,6 +74,7 @@ public class UsuariosService {
         newUser.setApellidoMaterno(request.getApellidoMaterno());
         newUser.setEmail(request.getCorreo());
         newUser.setUsername(request.getUsername());
+        newUser.setTelefono(request.getTelefono());
         newUser.setPassword(passwdHash);
         newUser.setClaveUsuario(claveGenerada);
         newUser.setEstatus(true);
