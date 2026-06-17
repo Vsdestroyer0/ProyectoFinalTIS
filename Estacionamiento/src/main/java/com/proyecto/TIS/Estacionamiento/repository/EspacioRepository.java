@@ -1,20 +1,28 @@
 package com.proyecto.TIS.Estacionamiento.repository;
 
 import com.proyecto.TIS.Estacionamiento.entity.Espacio;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
-@Mapper
-public interface EspacioRepository {
-   @Select("SELECT idEspacio AS id, ocupado FROM espacioestacionamiento WHERE ocupado = false AND estatus = true")
-   List<Espacio> obtenerEspaciosDisponibles();
+@Repository
+public interface EspacioRepository extends JpaRepository<Espacio, Integer> {
 
-   @Select("SELECT idEspacio AS id, ocupado FROM espacioestacionamiento WHERE idEspacio = #{idEspacio}")
-   Espacio obtenerPorId(@Param("idEspacio") Integer idEspacio);
+    // traer solo los cajones que esten libres y activos
+    @Query("SELECT e FROM Espacio e WHERE e.ocupado = false")
+    List<Espacio> obtenerEspaciosDisponibles();
 
-   @Update("UPDATE espacioestacionamiento SET ocupado = #{estado} WHERE idEspacio = #{idEspacio}")
-   void actualizarEstadoEspacio(@Param("idEspacio") Integer idEspacio, @Param("estado") Boolean estado);
+    // buscar un cajon por su id
+    @Query("SELECT e FROM Espacio e WHERE e.id = :idEspacio")
+    Espacio obtenerPorId(@Param("idEspacio") Integer idEspacio);
+
+    // poner el cajon como ocupado o libre
+    @Modifying
+    @Transactional
+    @Query("UPDATE Espacio e SET e.ocupado = :estado WHERE e.id = :idEspacio")
+    void actualizarEstadoEspacio(@Param("idEspacio") Integer idEspacio, @Param("estado") Boolean estado);
 }

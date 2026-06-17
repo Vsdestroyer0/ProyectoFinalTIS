@@ -1,122 +1,75 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.proyecto.TIS.Estacionamiento.entity;
 
-/**
- *
- * @author LuisA
- */
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
-@Entity 
+@Entity
 @Table(name = "movimiento")
 public class Movimiento {
-    
-    private Integer idSpace;
-    private Double tarHora;
-    private Double costoT;
-    private java.time.LocalDateTime tEntrada;
-    private java.time.LocalDateTime tSalida;
-    private java.time.LocalDateTime tCreacion;
-    private java.time.LocalDateTime tActualizacion;
-    private Integer minEstacionado;
-    private Integer hCobradas;
-    
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idMovimiento")
     private Integer idMove;
-    
+
+    @Column(name = "idVehiculo")
     private Integer idVehiculo;
 
-    public Integer getIdVehiculo() {
-        return idVehiculo;
-    }
+    @Column(name = "idEspacio")
+    private Integer idSpace;
 
-    public void setIdVehiculo(Integer idVehiculo) {
-        this.idVehiculo = idVehiculo;
-    }
+    @Column(name = "tarifaHora")
+    private Double tarHora;
 
+    @Column(name = "costoTotal")
+    private Double costoT;
 
-    public Integer getIdSpace() {
-        return idSpace;
-    }
+    @Column(name = "tiempoEntrada")
+    private LocalDateTime tEntrada;
 
-    public void setIdSpace(Integer idSpace) {
-        this.idSpace = idSpace;
-    }
+    @Column(name = "tiempoSalida")
+    private LocalDateTime tSalida;
 
-    public Double getTarHora() {
-        return tarHora;
-    }
+    @Column(name = "tiempoCreacion")
+    private LocalDateTime tCreacion;
 
-    public void setTarHora(Double tarHora) {
-        this.tarHora = tarHora;
-    }
+    @Column(name = "tiempoActualizacion")
+    private LocalDateTime tActualizacion;
 
-    public Double getCostoT() {
-        return costoT;
-    }
+    @Column(name = "minutosEstacionado")
+    private Integer minEstacionado;
 
-    public void setCostoT(Double costoT) {
-        this.costoT = costoT;
-    }
+    @Column(name = "horasCobradas")
+    private Integer hCobradas;
 
-    public LocalDateTime gettEntrada() {
-        return tEntrada;
-    }
+    // los getters de toda la vida
+    public Integer getIdMove() { return idMove; }
+    public Integer getIdVehiculo() { return idVehiculo; }
+    public Integer getIdSpace() { return idSpace; }
+    public Double getTarHora() { return tarHora; }
+    public Double getCostoT() { return costoT; }
+    public LocalDateTime gettEntrada() { return tEntrada; }
+    public LocalDateTime gettSalida() { return tSalida; }
+    public LocalDateTime gettCreacion() { return tCreacion; }
+    public LocalDateTime gettActualizacion() { return tActualizacion; }
+    public Integer getMinEstacionado() { return minEstacionado; }
+    public Integer gethCobradas() { return hCobradas; }
 
-    public void settEntrada(LocalDateTime tEntrada) {
-        this.tEntrada = tEntrada;
-    }
-
-    public LocalDateTime gettSalida() {
-        return tSalida;
-    }
-
-    public void settSalida(LocalDateTime tSalida) {
-        this.tSalida = tSalida;
-    }
-
-    public Integer getMinEstacionado() {
-        return minEstacionado;
-    }
-
-    public void setMinEstacionado(Integer minEstacionado) {
-        this.minEstacionado = minEstacionado;
-    }
-
-    public Integer gethCobradas() {
-        return hCobradas;
-    }
-
-    public void sethCobradas(Integer hCobradas) {
-        this.hCobradas = hCobradas;
-    }
-
-    public Integer getIdMove() {
-        return idMove;
-    }
-
-    public void setIdMove(Integer idMove) {
-        this.idMove = idMove;
-    }
-    public LocalDateTime gettCreacion() {
-        return tCreacion;
-    }
-
-    public void settCreacion(LocalDateTime tCreacion) {
-        this.tCreacion = tCreacion;
-    }
-
-    public LocalDateTime gettActualizacion() {
-        return tActualizacion;
-    }
-
-    public void settActualizacion(LocalDateTime tActualizacion) {
-        this.tActualizacion = tActualizacion;
-    }
+    // los setters de toda la vida
+    public void setIdMove(Integer idMove) { this.idMove = idMove; }
+    public void setIdVehiculo(Integer idVehiculo) { this.idVehiculo = idVehiculo; }
+    public void setIdSpace(Integer idSpace) { this.idSpace = idSpace; }
+    public void setTarHora(Double tarHora) { this.tarHora = tarHora; }
+    public void setCostoT(Double costoT) { this.costoT = costoT; }
+    public void settEntrada(LocalDateTime tEntrada) { this.tEntrada = tEntrada; }
+    public void settSalida(LocalDateTime tSalida) { this.tSalida = tSalida; }
+    public void settCreacion(LocalDateTime tCreacion) { this.tCreacion = tCreacion; }
+    public void settActualizacion(LocalDateTime tActualizacion) { this.tActualizacion = tActualizacion; }
+    public void setMinEstacionado(Integer minEstacionado) { this.minEstacionado = minEstacionado; }
+    public void sethCobradas(Integer hCobradas) { this.hCobradas = hCobradas; }
 }
