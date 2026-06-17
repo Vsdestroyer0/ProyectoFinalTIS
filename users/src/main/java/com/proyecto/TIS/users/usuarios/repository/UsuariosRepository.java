@@ -17,8 +17,5 @@ public interface UsuariosRepository extends JpaRepository<UsuariosEntity, Intege
     @Query("SELECT COUNT(u) > 0 FROM UsuariosEntity u WHERE u.email = :correo AND u.idUsuario != :idUsuario")
     boolean correoUsado(@Param("correo") String correo, @Param("idUsuario") int idUsuario);
 
-    @Query("SELECT u.estatus FROM UsuariosEntity u WHERE u.claveUsuario = :claveUsuario")
-    Boolean estatusUsuario(@Param("claveUsuario") String claveUsuario);
-
     UsuariosEntity findByClaveUsuario(String claveUsuario);
 }

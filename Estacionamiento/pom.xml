@@ -54,12 +54,6 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	 <dependency>
-	  <groupId>ch.exense.step</groupId>
-	  <artifactId>step-framework-model</artifactId>
-	  <version>2.0.12</version>
-	  <type>jar</type>
-	 </dependency>
 
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
