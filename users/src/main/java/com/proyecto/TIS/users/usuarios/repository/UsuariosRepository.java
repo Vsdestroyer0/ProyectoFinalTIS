@@ -11,10 +11,18 @@ public interface UsuariosRepository extends JpaRepository<UsuariosEntity, Intege
     
     UsuariosEntity findByUsername(String username);
 
-    @Query("SELECT COUNT(u) > 0 FROM UsuariosEntity u WHERE u.username = :username OR u.email = :correo")
+    @Query("""
+        SELECT COUNT(u) > 0 
+        FROM UsuariosEntity u 
+        WHERE u.username = :username OR u.email = :correo
+        """)
     boolean existeUsuarioPorCorreoOUsername(@Param("username") String username, @Param("correo") String correo);
 
-    @Query("SELECT COUNT(u) > 0 FROM UsuariosEntity u WHERE u.email = :correo AND u.idUsuario != :idUsuario")
+    @Query("""
+        SELECT COUNT(u) > 0 
+        FROM UsuariosEntity u 
+        WHERE u.email = :correo AND u.idUsuario != :idUsuario
+        """)
     boolean correoUsado(@Param("correo") String correo, @Param("idUsuario") int idUsuario);
 
     UsuariosEntity findByClaveUsuario(String claveUsuario);
