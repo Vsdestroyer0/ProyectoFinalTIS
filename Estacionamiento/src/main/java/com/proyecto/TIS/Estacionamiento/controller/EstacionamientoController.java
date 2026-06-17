@@ -20,7 +20,7 @@ public class EstacionamientoController {
     @Autowired
     private EstacionamientoService service;
 
-    // POST /api/estacionamiento/entrada
+    // endpoint para meter el carro
     @PostMapping("/entrada")
     public ResponseEntity<?> registrarEntrada(@RequestBody EntradaDTO dto,
                                               @RequestHeader(value = "Authorization", required = false) String authHeader) {
@@ -43,7 +43,7 @@ public class EstacionamientoController {
         }
     }
 
-    // POST /api/estacionamiento/salida
+    // endpoint para sacar el carro y cobrarle
     @PostMapping("/salida")
     public ResponseEntity<?> registrarSalida(@RequestBody SalidaDTO dto,
                                              @RequestHeader(value = "Authorization", required = false) String authHeader) {
@@ -70,7 +70,7 @@ public class EstacionamientoController {
         }
     }
 
-    // GET /api/estacionamiento/espacios
+    // endpoint para ver que cajones estan libres
     @GetMapping("/espacios")
     public ResponseEntity<?> consultarEspacios(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {

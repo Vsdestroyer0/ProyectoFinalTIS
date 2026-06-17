@@ -47,7 +47,7 @@ public class UsuariosService {
             throw new RuntimeException("Acceso denegado: Solo los administradores pueden registrar usuarios");
         }
 
-        // Fix de seguridad: Impedir que se creen cuentas con Rol de Administrador
+        // parche de seguridad: que ningun gracioso se cree cuenta de admin solo pq si
         if (request.getIdRol() == 1) {
             throw new RuntimeException("Acceso denegado: No está permitido registrar nuevos usuarios con rol de Administrador");
         }
@@ -154,7 +154,7 @@ public class UsuariosService {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
-        // 1. Validar datos obligatorios
+        // ver que no manden cosas vacias o nulas
         if (request.getNombre() == null || request.getNombre().trim().isEmpty()) {
             throw new RuntimeException("El nombre es obligatorio");
         }
@@ -177,7 +177,7 @@ public class UsuariosService {
             throw new RuntimeException("El programa educativo es obligatorio y debe ser válido");
         }
 
-        // 2. Validar tamaño de los campos
+        // validar que no se pasen de la longitud pq la base de datos se queja
         if (request.getNombre().length() > 50) {
             throw new RuntimeException("El nombre no puede exceder los 50 caracteres");
         }
@@ -194,12 +194,12 @@ public class UsuariosService {
             throw new RuntimeException("El teléfono debe tener exactamente 10 caracteres");
         }
 
-        // 3. Validar formato de correo
+        // ver si escribieron bien el email con arroba y eso
         if (!request.getCorreo().contains("@")) {
             throw new RuntimeException("El formato del correo es inválido");
         }
 
-        // 4. Validar mediante el correo electrónico que no existan usuarios repetidos
+        // que no repitan el mismo correo en otra cuenta
         if (usuariosRepository.correoUsado(request.getCorreo(), idUsuario)) {
             throw new RuntimeException("El correo ya está registrado en otra cuenta");
         }
@@ -209,7 +209,7 @@ public class UsuariosService {
             throw new RuntimeException("Usuario no encontrado");
         }
 
-        // 5. Validar que el usuario que intenta editar sea el dueño del perfil o un administrador
+        // ver que solo pueda editar su propio perfil o que sea el mero admin
         String usernameToken = jwtUtils.getUserNameFromJwtToken(token);
         int idRolToken = jwtUtils.getIdRolFromJwtToken(token);
         

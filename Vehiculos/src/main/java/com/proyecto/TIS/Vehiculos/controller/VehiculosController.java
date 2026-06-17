@@ -16,7 +16,7 @@ public class VehiculosController {
     @Autowired
     private VehiculosService service;
 
-    // GET /api/vehiculos/{idUsuario} — Buscar vehículos de un usuario
+    // endpoint para buscar los carros que tiene un usuario
     @GetMapping("/{idUsuario}")
     public ResponseEntity<?> buscar(@PathVariable Integer idUsuario,
                                     @RequestHeader("Authorization") String authHeader) {
@@ -29,7 +29,7 @@ public class VehiculosController {
         }
     }
 
-    // POST /api/vehiculos — Registrar vehículo
+    // endpoint para guardar un carro nuevo
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody VehiculoRequestDTO request,
                                        @RequestHeader("Authorization") String authHeader) {
@@ -42,7 +42,7 @@ public class VehiculosController {
         }
     }
 
-    // PUT /api/vehiculos/{idVehiculo} — Editar vehículo
+    // endpoint para cambiar datos de un carro
     @PutMapping("/{idVehiculo}")
     public ResponseEntity<?> editar(@PathVariable Integer idVehiculo,
                                     @RequestBody VehiculoRequestDTO request,
@@ -56,7 +56,7 @@ public class VehiculosController {
         }
     }
 
-    // PATCH /api/vehiculos/{idVehiculo}/estatus — Cambiar estatus
+    // endpoint para prender/apagar el carro (estatus)
     @PatchMapping("/{idVehiculo}/estatus")
     public ResponseEntity<?> cambiarEstatus(@PathVariable Integer idVehiculo,
                                             @RequestParam Integer idUsuario,
@@ -70,7 +70,7 @@ public class VehiculosController {
         }
     }
 
-    // GET /api/vehiculos/placa/{placa} — Buscar vehículo por placa (para estacionamiento)
+    // endpoint para buscar un carro por placa. Lo usa el microservicio de estacionamiento
     @GetMapping("/placa/{placa}")
     public ResponseEntity<?> obtenerPorPlaca(@PathVariable String placa) {
         com.proyecto.TIS.Vehiculos.entity.VehiculosEntity vehiculo = service.obtenerPorPlaca(placa);

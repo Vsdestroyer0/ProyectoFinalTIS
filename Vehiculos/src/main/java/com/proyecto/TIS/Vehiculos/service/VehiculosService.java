@@ -61,7 +61,7 @@ public class VehiculosService {
         );
     }
 
-    // Generar clave única de vehículo estilo V-XXX
+    // generamos la clave del carro automatica tipo V-001 o asi
     private String generarClaveVehiculo() {
         List<String> claves = repository.findAll().stream()
                 .map(VehiculosEntity::getClaveVehiculo)
@@ -74,7 +74,7 @@ public class VehiculosService {
         return clave;
     }
 
-    // GET: vehículos de un usuario
+    // buscar los carros que tiene guardados un usuario
     public List<VehiculoResponseDTO> buscarPorUsuario(Integer idUsuario, String token) {
         if (!jwtUtils.validateJwtToken(token)) {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
@@ -99,13 +99,13 @@ public class VehiculosService {
         return resultado;
     }
 
-    // POST: registrar vehículo
+    // meter un carro nuevo a la base de datos
     public String registrar(VehiculoRequestDTO request, String token) {
         if (!jwtUtils.validateJwtToken(token)) {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
-        // 1. Validar campos obligatorios
+        // validar que no dejen cosas vacias
         if (request.getIdUsuario() == null) {
             throw new RuntimeException("El idUsuario es obligatorio");
         }
@@ -125,7 +125,7 @@ public class VehiculosService {
             throw new RuntimeException("La descripción es obligatoria");
         }
 
-        // 2. Validar tamaño de los campos
+        // que los textos no esten mas largos de lo que aguanta la base de datos
         if (request.getPlaca().length() > 7) {
             throw new RuntimeException("La placa no puede exceder los 7 caracteres");
         }
@@ -136,7 +136,7 @@ public class VehiculosService {
             throw new RuntimeException("La descripción no puede exceder los 255 caracteres");
         }
 
-        // 3. Validar seguridad (BOLA)
+        // seguridad bola: que el usuario de la sesion sea el que registra el carro
         Integer idUsuarioToken = jwtUtils.getIdUsuarioFromJwtToken(token);
         Integer idRolToken = jwtUtils.getIdRolFromJwtToken(token);
 
@@ -144,13 +144,13 @@ public class VehiculosService {
             throw new RuntimeException("Acceso denegado: No puedes registrar vehículos para otro usuario");
         }
 
-        // 4. Máximo 4 vehículos activos
+        // no dejar registrar mas de 4 carros activos por wey
         long activos = repository.countByIdUsuarioAndEstatusTrue(request.getIdUsuario());
         if (activos >= 4) {
             throw new RuntimeException("El usuario ya tiene el límite de 4 vehículos activos");
         }
 
-        // 5. Placa no duplicada
+        // que no repitan placas pq no se puede
         if (repository.existsByPlaca(request.getPlaca())) {
             throw new RuntimeException("Ya existe un vehículo registrado con la placa: " + request.getPlaca());
         }
@@ -162,20 +162,20 @@ public class VehiculosService {
         nuevo.setColor(request.getColor());
         nuevo.setAnio(request.getAnio());
         nuevo.setDescripcion(request.getDescripcion());
-        nuevo.setEstatus(true); // Activo por defecto
+        nuevo.setEstatus(true); // que inicie prendido/activo
         nuevo.setClaveVehiculo(generarClaveVehiculo());
 
         repository.save(nuevo);
         return "Vehículo registrado correctamente con clave: " + nuevo.getClaveVehiculo();
     }
 
-    // PUT: editar vehículo
+    // para cuando quieran editar el carro
     public String editar(Integer idVehiculo, VehiculoRequestDTO request, String token) {
         if (!jwtUtils.validateJwtToken(token)) {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
-        // 1. Validar campos obligatorios
+        // validar que manden todo lo necesario
         if (request.getIdUsuario() == null) {
             throw new RuntimeException("El idUsuario es obligatorio");
         }
@@ -195,7 +195,7 @@ public class VehiculosService {
             throw new RuntimeException("La descripción es obligatoria");
         }
 
-        // 2. Validar tamaño de los campos
+        // validar longitud de los textos pq sino truena la bd
         if (request.getPlaca().length() > 7) {
             throw new RuntimeException("La placa no puede exceder los 7 caracteres");
         }
@@ -211,7 +211,7 @@ public class VehiculosService {
             throw new RuntimeException("Vehículo no encontrado");
         }
 
-        // 3. Validar seguridad (BOLA)
+        // validar que el carro si sea suyo antes de dejarlo editar
         Integer idUsuarioToken = jwtUtils.getIdUsuarioFromJwtToken(token);
         Integer idRolToken = jwtUtils.getIdRolFromJwtToken(token);
 
@@ -223,7 +223,7 @@ public class VehiculosService {
             throw new RuntimeException("Acceso denegado: no puedes transferir el vehículo a otro usuario");
         }
 
-        // 4. Placa no duplicada (excluyendo el propio vehículo)
+        // placa repetida no, pero sin contar el que estamos editando ahorita
         if (repository.existsByPlacaAndIdVehiculoNot(request.getPlaca(), idVehiculo)) {
             throw new RuntimeException("Ya existe otro vehículo con la placa: " + request.getPlaca());
         }
@@ -239,7 +239,7 @@ public class VehiculosService {
         return "Vehículo actualizado correctamente";
     }
 
-    // PATCH: cambiar estatus
+    // prender o apagar el carro (estatus)
     public String cambiarEstatus(Integer idVehiculo, Integer idUsuario, String token) {
         if (!jwtUtils.validateJwtToken(token)) {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
@@ -257,7 +257,7 @@ public class VehiculosService {
             throw new RuntimeException("Vehículo no encontrado");
         }
 
-        // Validar seguridad (BOLA)
+        // seguridad bola: ver si el carro es del mismo dueño de la sesion
         Integer idUsuarioToken = jwtUtils.getIdUsuarioFromJwtToken(token);
         Integer idRolToken = jwtUtils.getIdRolFromJwtToken(token);
 
@@ -269,7 +269,7 @@ public class VehiculosService {
             throw new RuntimeException("Acceso denegado: el vehículo no pertenece al usuario especificado");
         }
 
-        // Si se va a activar, validar que no tenga ya 4 vehículos activos
+        // si lo quiere prender, ver que no tenga ya los 4 activos
         if (!vehiculo.getEstatus()) {
             long activos = repository.countByIdUsuarioAndEstatusTrue(idUsuario);
             if (activos >= 4) {

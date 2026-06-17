@@ -50,7 +50,7 @@ public class UsuariosEntity {
     private LocalDateTime tiempoCreacion;
     private LocalDateTime tempoActualizacion;
 
-    // Getters
+    // los getters de toda la vida
     public Integer getIdUsuario() {
         return idUsuario;
     }
@@ -97,7 +97,7 @@ public class UsuariosEntity {
         return tempoActualizacion;
     }
 
-    // Setters
+    // los setters de toda la vida
     public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }

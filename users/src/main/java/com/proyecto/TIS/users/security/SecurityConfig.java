@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Registramos el bean BCryptPasswordEncoder requerido por el AuthService
+    // bean para encriptar la contra del usuario con bcrypt
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -21,10 +21,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Deshabilitamos CSRF porque usamos JWT (stateless)
+            .csrf(csrf -> csrf.disable()) // apagar csrf pq usamos jwt y no nos importa ahorita
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // Permitir login público
-                .anyRequest().permitAll() // Permitimos el resto temporalmente o requerir autenticación
+                .requestMatchers("/api/auth/**").permitAll() // el login no pide token
+                .anyRequest().permitAll() // todo lo demas de usuarios pasa libre por ahora
             );
         return http.build();
     }

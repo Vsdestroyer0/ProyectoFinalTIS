@@ -17,7 +17,7 @@ import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface MovimientoRepository {
-    //Para saber si un carro ya esta adentro
+    // checar si el carro ya esta en el estacionamiento para que no haga trampa
     @Select("SELECT COUNT(*) FROM movimiento WHERE idVehiculo = #{idVehiculo} AND tiempoSalida IS NULL")
     Integer contarMovimientosActivosPorVehiculo(@Param("idVehiculo")Integer idVehiculo); 
     

@@ -40,9 +40,9 @@ public class EstacionamientoService {
     @Value("${vehiculos.service.url}")
     private String vehiculosServiceUrl;
 
-    // Registrar movimiento (entrada)
+    // Aca registramos la entrada del carro
     public Movimiento registrarEntrada(EntradaDTO dto, String token) throws Exception {
-        // 1. Validar datos obligatorios
+        // validamos que no falte ni un dato pq sino truena
         if (dto.getClaveU() == null || dto.getClaveU().trim().isEmpty()) {
             throw new Exception("La clave del usuario es obligatoria");
         }
@@ -62,7 +62,7 @@ public class EstacionamientoService {
             throw new Exception("El tiempo de creación es obligatorio");
         }
 
-        // 2. Validar que el usuario esté activo y registrado (llamada RestTemplate)
+        // checar con resttemplate que el usuario si exista y este activo en el otro server
         String userUrl = usuariosServiceUrl + "/api/user/clave/" + dto.getClaveU();
         Map<String, Object> userResponse;
         try {
@@ -79,7 +79,7 @@ public class EstacionamientoService {
         }
         Integer idUsuario = (Integer) userResponse.get("idUsuario");
 
-        // 3. Validar que el vehículo esté registrado, activo y pertenezca al usuario (llamada RestTemplate)
+        // lo mismo pero pal carro, ver que si sea de el y este activo
         String vehicleUrl = vehiculosServiceUrl + "/api/vehiculos/placa/" + dto.getPlaca();
         Map<String, Object> vehicleResponse;
         try {
@@ -100,8 +100,8 @@ public class EstacionamientoService {
         }
         Integer idVehiculo = (Integer) vehicleResponse.get("idVehiculo");
 
-        // 4. Validar límite de máximo 2 vehículos activos adentro por usuario
-        // Obtenemos la lista de todos los vehículos del usuario y verificamos cuántos están en el estacionamiento
+        // maximo 2 carros adentro por persona
+        // traer todos sus carros y contar cuales estan estacionados ahorita
         String userVehiclesUrl = vehiculosServiceUrl + "/api/vehiculos/" + idUsuario;
         List<Map<String, Object>> vehiclesList;
         try {
@@ -134,12 +134,12 @@ public class EstacionamientoService {
             throw new Exception("El usuario ya tiene el límite máximo de 2 vehículos en el estacionamiento");
         }
 
-        // 5. Validar que el carro no esté ya adentro
+        // no dejar meter el mismo carro dos veces
         if (movimientoRepository.contarMovimientosActivosPorVehiculo(idVehiculo) > 0) {
             throw new Exception("El vehículo ya se encuentra adentro del estacionamiento");
         }
 
-        // 6. Validar y asignar espacio
+        // ver si el cajon esta libre o ya lo ganaron
         Espacio espacio = espacioRepository.obtenerPorId(dto.getIdSpace());
         if (espacio == null) {
             throw new Exception("El espacio especificado no existe");
@@ -148,7 +148,7 @@ public class EstacionamientoService {
             throw new Exception("El espacio especificado ya está ocupado");
         }
 
-        // 7. Crear el movimiento
+        // meter el registro de entrada
         Movimiento nuevoMovimiento = new Movimiento();
         nuevoMovimiento.setIdVehiculo(idVehiculo);
         nuevoMovimiento.setIdSpace(dto.getIdSpace());
@@ -158,15 +158,15 @@ public class EstacionamientoService {
 
         movimientoRepository.registrarEntrada(nuevoMovimiento);
 
-        // 8. Ocupar el espacio
+        // marcar el cajon como ocupado
         espacioRepository.actualizarEstadoEspacio(dto.getIdSpace(), true);
 
         return nuevoMovimiento;
     }
 
-    // Registrar movimiento (salida)
+    // esto es para cuando ya se van
     public Movimiento registrarSalida(SalidaDTO dto, String token) throws Exception {
-        // 1. Validar datos obligatorios
+        // ver que manden todo lo que pide la peticion
         if (dto.getClaveU() == null || dto.getClaveU().trim().isEmpty()) {
             throw new Exception("La clave del usuario es obligatoria");
         }
@@ -189,7 +189,7 @@ public class EstacionamientoService {
             throw new Exception("Los minutos estacionado son obligatorios");
         }
 
-        // 2. Validar que el usuario esté activo y registrado (llamada RestTemplate)
+        // ver si el wey sigue activo
         String userUrl = usuariosServiceUrl + "/api/user/clave/" + dto.getClaveU();
         Map<String, Object> userResponse;
         try {
@@ -206,7 +206,7 @@ public class EstacionamientoService {
         }
         Integer idUsuario = (Integer) userResponse.get("idUsuario");
 
-        // 3. Validar que el vehículo esté registrado y pertenezca al usuario (llamada RestTemplate)
+        // ver que el carro si sea de el
         String vehicleUrl = vehiculosServiceUrl + "/api/vehiculos/placa/" + dto.getPlaca();
         Map<String, Object> vehicleResponse;
         try {
@@ -223,13 +223,13 @@ public class EstacionamientoService {
         }
         Integer idVehiculo = (Integer) vehicleResponse.get("idVehiculo");
 
-        // 4. Buscar el movimiento activo del vehículo
+        // buscar cuando entro para poder cobrarle
         Movimiento movimiento = movimientoRepository.obtenerMovimientoActivoPorVehiculo(idVehiculo);
         if (movimiento == null) {
             throw new Exception("El vehículo no se encuentra adentro del estacionamiento");
         }
 
-        // 5. Registrar salida
+        // meterle los datos de salida y cobro
         movimiento.settSalida(dto.gettSalida());
         movimiento.settActualizacion(dto.gettActualizacion());
         movimiento.setMinEstacionado(dto.getMinEstacionado());
@@ -238,13 +238,13 @@ public class EstacionamientoService {
 
         movimientoRepository.registrarSalida(movimiento);
 
-        // 6. Liberar el espacio
+        // liberar el cajon
         espacioRepository.actualizarEstadoEspacio(movimiento.getIdSpace(), false);
 
         return movimiento;
     }
 
-    // Consultar espacios disponibles
+    // solo ver los cajones libres
     public List<Espacio> consultarEspacios(String token) throws Exception {
         if (!jwtUtils.validateJwtToken(token)) {
             throw new Exception("Acceso denegado: Token inválido o expirado");

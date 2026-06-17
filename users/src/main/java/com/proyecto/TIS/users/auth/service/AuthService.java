@@ -49,7 +49,7 @@ public class AuthService {
 
         String token = jwtUtils.generateTokenFromUsername(user.getUsername(), user.getIdRol(), user.getIdUsuario());
         
-        // Forma legible de construir el nombre completo
+        // pegar el nombre y apellidos para que no se vea feo
         String nombreCompleto = user.getNombre() + " " + user.getApellidoPaterno();
         if (user.getApellidoMaterno() != null && !user.getApellidoMaterno().trim().isEmpty()) {
             nombreCompleto = nombreCompleto + " " + user.getApellidoMaterno();
