@@ -104,25 +104,25 @@ public class UsuariosService {
             throw new RuntimeException("Acceso denegado: Token inválido o expirado");
         }
 
-        UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);
+        UsuariosEntity user = usuariosRepository.findById(idUsuario);
         if (user == null) {
             throw new RuntimeException("Usuario con id " + idUsuario + " no existe");
         }
 
         String rolNombre = "Desconocido";
-        RolEntity rol = rolRepository.findById(user.getIdRol()).orElse(null);
+        RolEntity rol = rolRepository.findById(user.getIdRol());
         if (rol != null) {
             rolNombre = rol.getNombre();
         }
 
         String tipoUsuarioNombre = "Desconocido";
-        TipoUsuarioEntity tipo = tipoUsuarioRepository.findById(user.getIdTipoUsuario()).orElse(null);
+        TipoUsuarioEntity tipo = tipoUsuarioRepository.findById(user.getIdTipoUsuario());
         if (tipo != null) {
             tipoUsuarioNombre = tipo.getNombre();
         }
 
         String programaEducativoNombre = "Desconocido";
-        ProgramaEducativoEntity programa = programaEducativoRepository.findById(user.getIdProgramaEducativo()).orElse(null);
+        ProgramaEducativoEntity programa = programaEducativoRepository.findById(user.getIdProgramaEducativo());
         if (programa != null) {
             programaEducativoNombre = programa.getNombre();
         }
@@ -204,7 +204,7 @@ public class UsuariosService {
             throw new RuntimeException("El correo ya está registrado en otra cuenta");
         }
 
-        UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);
+        UsuariosEntity user = usuariosRepository.findById(idUsuario);
         if (user == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
@@ -227,7 +227,7 @@ public class UsuariosService {
         user.setTelefono(request.getTelefono()); 
         user.setTempoActualizacion(LocalDateTime.now());
 
-        usuariosRepository.save(user);
+        usuariosRepository.update(user);
         return "Usuario actualizado correctamente";
     }
 
@@ -237,7 +237,7 @@ public class UsuariosService {
             throw new RuntimeException("Acceso denegado: Solo los administradores pueden cambiar el estatus de un usuario");
         }
 
-        UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);
+        UsuariosEntity user = usuariosRepository.findById(idUsuario);
         if (user == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
@@ -247,7 +247,7 @@ public class UsuariosService {
         } else {
             user.setEstatus(true);
         }
-        usuariosRepository.save(user);
+        usuariosRepository.update(user);
 
         return "Estatus del usuario actualizado correctamente";
     }

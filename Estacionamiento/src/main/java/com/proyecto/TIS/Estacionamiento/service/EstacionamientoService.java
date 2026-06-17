@@ -156,7 +156,7 @@ public class EstacionamientoService {
         nuevoMovimiento.settEntrada(dto.gettEntrada());
         nuevoMovimiento.settCreacion(dto.gettCreacion());
 
-        movimientoRepository.save(nuevoMovimiento);
+        movimientoRepository.registrarEntrada(nuevoMovimiento);
 
         // marcar el cajon como ocupado
         espacioRepository.actualizarEstadoEspacio(dto.getIdSpace(), true);
@@ -236,7 +236,7 @@ public class EstacionamientoService {
         movimiento.sethCobradas(dto.gethCobradas());
         movimiento.setCostoT(dto.getCostoT());
 
-        movimientoRepository.save(movimiento);
+        movimientoRepository.registrarSalida(movimiento);
 
         // liberar el cajon
         espacioRepository.actualizarEstadoEspacio(movimiento.getIdSpace(), false);

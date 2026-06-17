@@ -36,11 +36,11 @@ public class VehiculosService {
         Integer idMarca = null;
         String nombreMarca = "Desconocido";
 
-        ModeloEntity modelo = modeloRepository.findById(v.getIdModelo()).orElse(null);
+        ModeloEntity modelo = modeloRepository.findById(v.getIdModelo());
         if (modelo != null) {
             nombreModelo = modelo.getModelo();
             idMarca = modelo.getIdMarca();
-            MarcaEntity marca = marcaRepository.findById(idMarca).orElse(null);
+            MarcaEntity marca = marcaRepository.findById(idMarca);
             if (marca != null) {
                 nombreMarca = marca.getMarca();
             }
@@ -63,9 +63,7 @@ public class VehiculosService {
 
     // generamos la clave del carro automatica tipo V-001 o asi
     private String generarClaveVehiculo() {
-        List<String> claves = repository.findAll().stream()
-                .map(VehiculosEntity::getClaveVehiculo)
-                .collect(java.util.stream.Collectors.toList());
+        List<String> claves = repository.findAllClaves();
         String clave;
         do {
             int numero = (int)(Math.random() * 900) + 100;
@@ -206,7 +204,7 @@ public class VehiculosService {
             throw new RuntimeException("La descripción no puede exceder los 255 caracteres");
         }
 
-        VehiculosEntity vehiculo = repository.findById(idVehiculo).orElse(null);
+        VehiculosEntity vehiculo = repository.findById(idVehiculo);
         if (vehiculo == null) {
             throw new RuntimeException("Vehículo no encontrado");
         }
@@ -235,7 +233,7 @@ public class VehiculosService {
         vehiculo.setAnio(request.getAnio());
         vehiculo.setDescripcion(request.getDescripcion());
 
-        repository.save(vehiculo);
+        repository.update(vehiculo);
         return "Vehículo actualizado correctamente";
     }
 
@@ -252,7 +250,7 @@ public class VehiculosService {
             throw new RuntimeException("El idUsuario es obligatorio");
         }
 
-        VehiculosEntity vehiculo = repository.findById(idVehiculo).orElse(null);
+        VehiculosEntity vehiculo = repository.findById(idVehiculo);
         if (vehiculo == null) {
             throw new RuntimeException("Vehículo no encontrado");
         }
@@ -278,7 +276,7 @@ public class VehiculosService {
         }
 
         vehiculo.setEstatus(!vehiculo.getEstatus());
-        repository.save(vehiculo);
+        repository.update(vehiculo);
 
         String nuevoEstatus;
         if (vehiculo.getEstatus()) {
@@ -290,6 +288,6 @@ public class VehiculosService {
     }
 
     public VehiculosEntity obtenerPorPlaca(String placa) {
-        return repository.findByPlaca(placa).orElse(null);
+        return repository.findByPlaca(placa);
     }
 }

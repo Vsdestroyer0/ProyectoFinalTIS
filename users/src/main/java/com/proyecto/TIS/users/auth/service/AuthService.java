@@ -56,13 +56,13 @@ public class AuthService {
         }
 
         String rolNombre = "Desconocido";
-        RolEntity rol = rolRepository.findById(user.getIdRol()).orElse(null);
+        RolEntity rol = rolRepository.findById(user.getIdRol());
         if (rol != null) {
             rolNombre = rol.getNombre();
         }
 
         String tipoUsuarioNombre = "Desconocido";
-        TipoUsuarioEntity tipo = tipoUsuarioRepository.findById(user.getIdTipoUsuario()).orElse(null);
+        TipoUsuarioEntity tipo = tipoUsuarioRepository.findById(user.getIdTipoUsuario());
         if (tipo != null) {
             tipoUsuarioNombre = tipo.getNombre();
         }

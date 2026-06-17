@@ -1,9 +1,14 @@
 package com.proyecto.TIS.Vehiculos.repository;
 
 import com.proyecto.TIS.Vehiculos.entity.MarcaEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
-@Repository
-public interface MarcaRepository extends JpaRepository<MarcaEntity, Integer> {
+@Mapper
+public interface MarcaRepository {
+
+    // buscar marca por id
+    @Select("SELECT idMarca, marca FROM marca WHERE idMarca = #{id}")
+    MarcaEntity findById(@Param("id") Integer id);
 }

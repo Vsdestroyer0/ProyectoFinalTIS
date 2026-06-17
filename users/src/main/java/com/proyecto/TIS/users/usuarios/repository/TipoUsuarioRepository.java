@@ -1,9 +1,14 @@
 package com.proyecto.TIS.users.usuarios.repository;
 
 import com.proyecto.TIS.users.usuarios.entity.TipoUsuarioEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
-@Repository
-public interface TipoUsuarioRepository extends JpaRepository<TipoUsuarioEntity, Integer> {
+@Mapper
+public interface TipoUsuarioRepository {
+
+    // buscar tipo de usuario por id
+    @Select("SELECT idTipo, nombre FROM tipo_usuario WHERE idTipo = #{id}")
+    TipoUsuarioEntity findById(@Param("id") Integer id);
 }

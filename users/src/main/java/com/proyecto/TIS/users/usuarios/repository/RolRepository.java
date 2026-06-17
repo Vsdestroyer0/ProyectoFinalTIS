@@ -1,9 +1,14 @@
 package com.proyecto.TIS.users.usuarios.repository;
 
 import com.proyecto.TIS.users.usuarios.entity.RolEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
-@Repository
-public interface RolRepository extends JpaRepository<RolEntity, Integer> {
+@Mapper
+public interface RolRepository {
+
+    // buscar rol por id
+    @Select("SELECT idRol, nombre FROM rol WHERE idRol = #{id}")
+    RolEntity findById(@Param("id") Integer id);
 }
