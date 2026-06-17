@@ -9,9 +9,12 @@ import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface EspacioRepository {
-   @Select("SELECT * FROM espacioestacionamiento WHERE ocupado = false")
+   @Select("SELECT idEspacio AS id, ocupado FROM espacioestacionamiento WHERE ocupado = false AND estatus = true")
    List<Espacio> obtenerEspaciosDisponibles();
 
+   @Select("SELECT idEspacio AS id, ocupado FROM espacioestacionamiento WHERE idEspacio = #{idEspacio}")
+   Espacio obtenerPorId(@Param("idEspacio") Integer idEspacio);
+
    @Update("UPDATE espacioestacionamiento SET ocupado = #{estado} WHERE idEspacio = #{idEspacio}")
-   void actualizarEstadoEspacio(@Param("idEspacio")Integer idEspacio, @Param("estado")Boolean estado);
+   void actualizarEstadoEspacio(@Param("idEspacio") Integer idEspacio, @Param("estado") Boolean estado);
 }

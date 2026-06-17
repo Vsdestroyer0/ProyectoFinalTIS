@@ -251,4 +251,8 @@ public class UsuariosService {
 
         return "Estatus del usuario actualizado correctamente";
     }
+
+    public UsuariosEntity obtenerPorClave(String claveUsuario) {
+        return usuariosRepository.findByClaveUsuario(claveUsuario);
+    }
 }

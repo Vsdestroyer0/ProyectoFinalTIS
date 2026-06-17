@@ -71,4 +71,13 @@ public class UsuariosController {
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }
+
+    @GetMapping("/clave/{claveUsuario}")
+    public ResponseEntity<?> getUserByClave(@PathVariable String claveUsuario) {
+        com.proyecto.TIS.users.usuarios.entity.UsuariosEntity user = usuariosService.obtenerPorClave(claveUsuario);
+        if (user == null) {
+            return ResponseEntity.status(404).body("Usuario no encontrado");
+        }
+        return ResponseEntity.ok(user);
+    }
 }

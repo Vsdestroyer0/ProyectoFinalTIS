@@ -85,6 +85,8 @@ services:
     environment:
       - DB_HOST=db-estacionamiento
       - DB_PORT=3306
+      - USERS_HOST=app-usuarios
+      - VEHICLES_HOST=app-vehiculos
     depends_on:
       - db-estacionamiento
     restart: always

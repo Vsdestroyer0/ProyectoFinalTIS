@@ -19,4 +19,7 @@ public interface VehiculosRepository extends JpaRepository<VehiculosEntity, Inte
 
     // Validar placa al editar (excluyendo el propio vehículo)
     boolean existsByPlacaAndIdVehiculoNot(String placa, Integer idVehiculo);
+
+    // Buscar vehículo por placa
+    java.util.Optional<VehiculosEntity> findByPlaca(String placa);
 }

@@ -4,6 +4,7 @@
  */
 package com.proyecto.TIS.Estacionamiento.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 /**
@@ -16,10 +17,20 @@ public class SalidaDTO {
     private String placa;  
     private Double tarHora;
     private Integer idSpace;
+
+    @JsonProperty("tSalida")
     private java.time.LocalDateTime tSalida;
+
+    @JsonProperty("tActualizacion")
     private java.time.LocalDateTime tActualizacion; 
+
+    @JsonProperty("minEstacionado")
     private Integer minEstacionado;
+
+    @JsonProperty("hCobradas")
     private Integer hCobradas;
+
+    @JsonProperty("costoT")
     private Double costoT;
     
     public String getClaveU() {

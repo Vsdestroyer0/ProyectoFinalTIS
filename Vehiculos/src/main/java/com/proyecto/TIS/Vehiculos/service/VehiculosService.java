@@ -283,4 +283,8 @@ public class VehiculosService {
         String nuevoEstatus = vehiculo.getEstatus() ? "activo" : "inactivo";
         return "Estatus del vehículo actualizado a: " + nuevoEstatus;
     }
+
+    public VehiculosEntity obtenerPorPlaca(String placa) {
+        return repository.findByPlaca(placa).orElse(null);
+    }
 }

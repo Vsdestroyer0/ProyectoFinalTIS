@@ -1,5 +1,6 @@
 package com.proyecto.TIS.Estacionamiento.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 public class EntradaDTO {
@@ -8,7 +9,11 @@ public class EntradaDTO {
     private String placa;  
     private Double tarHora;
     private Integer idSpace;
+
+    @JsonProperty("tEntrada")
     private java.time.LocalDateTime tEntrada;
+
+    @JsonProperty("tCreacion")
     private java.time.LocalDateTime tCreacion;
 
     public String getClaveU() {

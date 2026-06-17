@@ -119,3 +119,40 @@ Body: JSON
 PATCH 
 http://localhost:8084/api/vehiculos/{idVehiculo}/estatus?idUsuario={idUsuario}
 (El parámetro `idUsuario` en la URL sirve para verificar que el usuario que hace la petición es el dueño del vehículo)
+
+## Estacionamiento (Puerto 8085)
+*Nota: Todos los endpoints de estacionamiento requieren el token de acceso en la pestaña "Authorization -> Bearer Token"*
+
+1. Consultar espacios disponibles
+GET 
+http://localhost:8085/api/estacionamiento/espacios
+
+2. Registrar movimiento (entrada)
+POST 
+http://localhost:8085/api/estacionamiento/entrada
+
+Body: JSON
+{
+    "claveU": "claveUsuario",
+    "placa": "XYZ123",
+    "tarHora": 15.0,
+    "idSpace": 1,
+    "tEntrada": "2026-06-16T20:00:00",
+    "tCreacion": "2026-06-16T20:00:00"
+}
+
+3. Registrar movimiento (salida)
+POST 
+http://localhost:8085/api/estacionamiento/salida
+
+Body: JSON
+{
+    "claveU": "claveUsuario",
+    "placa": "XYZ123",
+    "tSalida": "2026-06-16T22:30:00",
+    "tActualizacion": "2026-06-16T22:30:00",
+    "minEstacionado": 150,
+    "hCobradas": 3,
+    "costoT": 45.0
+}
+

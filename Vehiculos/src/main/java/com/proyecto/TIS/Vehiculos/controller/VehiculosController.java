@@ -69,4 +69,14 @@ public class VehiculosController {
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }
+
+    // GET /api/vehiculos/placa/{placa} — Buscar vehículo por placa (para estacionamiento)
+    @GetMapping("/placa/{placa}")
+    public ResponseEntity<?> obtenerPorPlaca(@PathVariable String placa) {
+        com.proyecto.TIS.Vehiculos.entity.VehiculosEntity vehiculo = service.obtenerPorPlaca(placa);
+        if (vehiculo == null) {
+            return ResponseEntity.status(404).body("Vehículo no encontrado");
+        }
+        return ResponseEntity.ok(vehiculo);
+    }
 }

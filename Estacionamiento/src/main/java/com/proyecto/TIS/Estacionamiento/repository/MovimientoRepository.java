@@ -17,13 +17,17 @@ import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface MovimientoRepository {
-     //Para saber si un carro ya esta adentro
+    //Para saber si un carro ya esta adentro
     @Select("SELECT COUNT(*) FROM movimiento WHERE idVehiculo = #{idVehiculo} AND tiempoSalida IS NULL")
     Integer contarMovimientosActivosPorVehiculo(@Param("idVehiculo")Integer idVehiculo); 
     
+    @org.apache.ibatis.annotations.Options(useGeneratedKeys = true, keyProperty = "idMove", keyColumn = "idMovimiento")
     @Insert("INSERT INTO movimiento (idVehiculo, idEspacio, tarifaHora, tiempoEntrada, tiempoCreacion) VALUES (#{idVehiculo}, #{idSpace}, #{tarHora}, #{tEntrada}, #{tCreacion})")
     void registrarEntrada(Movimiento movimiento);
     
     @Update("UPDATE movimiento SET tiempoSalida = #{tSalida}, tiempoActualizacion = #{tActualizacion}, minutosEstacionado = #{minEstacionado}, horasCobradas = #{hCobradas}, costoTotal = #{costoT} WHERE idMovimiento = #{idMove}")
     void registrarSalida(Movimiento movimiento);
+
+    @Select("SELECT idMovimiento AS idMove, idVehiculo, idEspacio AS idSpace, tarifaHora AS tarHora, tiempoEntrada AS tEntrada, tiempoSalida AS tSalida, tiempoCreacion AS tCreacion, tiempoActualizacion AS tActualizacion, minutosEstacionado AS minEstacionado, horasCobradas AS hCobradas, costoTotal AS costoT FROM movimiento WHERE idVehiculo = #{idVehiculo} AND tiempoSalida IS NULL")
+    Movimiento obtenerMovimientoActivoPorVehiculo(@Param("idVehiculo") Integer idVehiculo);
 }
