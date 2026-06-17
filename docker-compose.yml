@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Database for the Users Microservice (PostgreSQL)
+  # Base de datos para el microservicio de usuarios (PostgreSQL)
   db-usuarios:
     image: docker.io/library/postgres:17-alpine
     container_name: sicae-db-usuarios
@@ -16,7 +16,7 @@ services:
       - pgdata-usuarios:/var/lib/postgresql/data
     restart: always
 
-  # Spring Boot Microservice for Users
+  # Microservicio de Spring Boot para usuarios
   app-usuarios:
     build: 
       context: ./users
@@ -30,7 +30,7 @@ services:
       - db-usuarios
     restart: always
 
-  # Database for the Vehiculos Microservice (MySQL)
+  # Base de datos para el microservicio de vehículos (MySQL)
   db-vehiculos:
     image: docker.io/library/mysql:8.0
     container_name: sicae-db-vehiculos
@@ -45,7 +45,7 @@ services:
       - mysql-vehiculos:/var/lib/mysql
     restart: always
 
-  # Spring Boot Microservice for Vehiculos
+  # Microservicio de Spring Boot para vehículos
   app-vehiculos:
     build:
       context: ./Vehiculos
@@ -59,7 +59,7 @@ services:
       - db-vehiculos
     restart: always
 
-  # Database for the Estacionamiento Microservice (MySQL)
+  # Base de datos para el microservicio de estacionamiento (MySQL)
   db-estacionamiento:
     image: docker.io/library/mysql:8.0
     container_name: sicae-db-estacionamiento
@@ -74,7 +74,7 @@ services:
       - mysql-estacionamiento:/var/lib/mysql
     restart: always
 
-  # Spring Boot Microservice for Estacionamiento
+  # Microservicio de Spring Boot para estacionamiento
   app-estacionamiento:
     build:
       context: ./Estacionamiento
