@@ -280,7 +280,12 @@ public class VehiculosService {
         vehiculo.setEstatus(!vehiculo.getEstatus());
         repository.save(vehiculo);
 
-        String nuevoEstatus = vehiculo.getEstatus() ? "activo" : "inactivo";
+        String nuevoEstatus;
+        if (vehiculo.getEstatus()) {
+            nuevoEstatus = "activo";
+        } else {
+            nuevoEstatus = "inactivo";
+        }
         return "Estatus del vehículo actualizado a: " + nuevoEstatus;
     }
 
