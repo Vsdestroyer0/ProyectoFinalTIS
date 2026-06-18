@@ -42,9 +42,36 @@ public class UsuariosService {
 
     public String register(RegistroUsuarioDTO request, String token) {
         System.out.println("TELEFONO RECIBIDO EN DTO: " + request.getTelefono());
+        
+        if (!jwtUtils.validateJwtToken(token)) {
+            throw new RuntimeException("Token JWT no proporcionado, inválido o expirado");
+        }
+
         int idRol = jwtUtils.getIdRolFromJwtToken(token);
         if (idRol != 1) {
-            throw new RuntimeException("Acceso denegado: Solo los administradores pueden registrar usuarios");
+            throw new RuntimeException("El usuario autenticado que realiza la petición no tiene el rol de administrador");
+        }
+
+        // Validate mandatory fields
+        if (request == null ||
+            request.getNombre() == null || request.getNombre().trim().isEmpty() ||
+            request.getApellidoPaterno() == null || request.getApellidoPaterno().trim().isEmpty() ||
+            request.getCorreo() == null || request.getCorreo().trim().isEmpty() ||
+            request.getUsername() == null || request.getUsername().trim().isEmpty() ||
+            request.getPassword() == null || request.getPassword().trim().isEmpty() ||
+            request.getTelefono() == null || request.getTelefono().trim().isEmpty() ||
+            request.getIdRol() <= 0 || request.getIdTipoUsuario() <= 0 || request.getIdProgramaEducativo() <= 0) {
+            throw new RuntimeException("Faltan datos obligatorios");
+        }
+
+        // Validate field sizes
+        if (request.getNombre().length() > 50 ||
+            request.getApellidoPaterno().length() > 50 ||
+            (request.getApellidoMaterno() != null && request.getApellidoMaterno().length() > 50) ||
+            request.getCorreo().length() > 255 ||
+            request.getUsername().length() > 30 ||
+            request.getTelefono().length() > 10) {
+            throw new RuntimeException("Se excede el tamaño de los campos");
         }
 
         // parche de seguridad: que ningun gracioso se cree cuenta de admin solo pq si
@@ -57,9 +84,9 @@ public class UsuariosService {
         }
 
         if (usuariosRepository.existeUsuarioPorCorreoOUsername(request.getUsername(), request.getCorreo())) {
-            throw new RuntimeException("Usuario con mismo correo o username ya registrado");
+            throw new RuntimeException("Ya existe un usuario registrado con el mismo correo electrónico o username");
         }
-
+        
         String iniciales = request.getNombre().substring(0, 1) + request.getApellidoPaterno().substring(0, 1);
         if (request.getApellidoMaterno() != null && !request.getApellidoMaterno().trim().isEmpty()) {
             iniciales += request.getApellidoMaterno().substring(0, 1);
@@ -101,14 +128,18 @@ public class UsuariosService {
 
     public PerfilUsuarioDTO perf(int idUsuario, String token) {
         if (!jwtUtils.validateJwtToken(token)) {
-            throw new RuntimeException("Acceso denegado: Token inválido o expirado");
+            throw new RuntimeException("Token JWT no proporcionado o inválido");
+        }
+
+        if (idUsuario <= 0) {
+            throw new RuntimeException("No se proporcionó el identificador del usuario (idUsuario)");
         }
 
         UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);
         if (user == null) {
-            throw new RuntimeException("Usuario con id " + idUsuario + " no existe");
+            throw new RuntimeException("El idUsuario solicitado no existe en la base de datos");
         }
-
+        
         String rolNombre = "Desconocido";
         RolEntity rol = rolRepository.findById(user.getIdRol()).orElse(null);
         if (rol != null) {
@@ -151,47 +182,30 @@ public class UsuariosService {
 
     public String edit(int idUsuario, ActualizarUsuarioDTO request, String token) {
         if (!jwtUtils.validateJwtToken(token)) {
-            throw new RuntimeException("Acceso denegado: Token inválido o expirado");
+            throw new RuntimeException("Token JWT no proporcionado o inválido");
+        }
+
+        // Detect editing protected fields
+        if (request.getUsername() != null || request.getPassword() != null || request.getClaveUsuario() != null) {
+            throw new RuntimeException("Intento de editar campos protegidos (usuario, contraseña, clave del usuario)");
         }
 
         // ver que no manden cosas vacias o nulas
-        if (request.getNombre() == null || request.getNombre().trim().isEmpty()) {
-            throw new RuntimeException("El nombre es obligatorio");
-        }
-        if (request.getApellidoPaterno() == null || request.getApellidoPaterno().trim().isEmpty()) {
-            throw new RuntimeException("El apellido paterno es obligatorio");
-        }
-        if (request.getCorreo() == null || request.getCorreo().trim().isEmpty()) {
-            throw new RuntimeException("El correo es obligatorio");
-        }
-        if (request.getTelefono() == null || request.getTelefono().trim().isEmpty()) {
-            throw new RuntimeException("El teléfono es obligatorio");
-        }
-        if (request.getIdRol() <= 0) {
-            throw new RuntimeException("El rol es obligatorio y debe ser válido");
-        }
-        if (request.getIdTipoUsuario() <= 0) {
-            throw new RuntimeException("El tipo de usuario es obligatorio y debe ser válido");
-        }
-        if (request.getIdProgramaEducativo() <= 0) {
-            throw new RuntimeException("El programa educativo es obligatorio y debe ser válido");
+        if (request.getNombre() == null || request.getNombre().trim().isEmpty() ||
+            request.getApellidoPaterno() == null || request.getApellidoPaterno().trim().isEmpty() ||
+            request.getCorreo() == null || request.getCorreo().trim().isEmpty() ||
+            request.getTelefono() == null || request.getTelefono().trim().isEmpty() ||
+            request.getIdRol() <= 0 || request.getIdTipoUsuario() <= 0 || request.getIdProgramaEducativo() <= 0) {
+            throw new RuntimeException("Faltan datos obligatorios");
         }
 
         // validar que no se pasen de la longitud pq la base de datos se queja
-        if (request.getNombre().length() > 50) {
-            throw new RuntimeException("El nombre no puede exceder los 50 caracteres");
-        }
-        if (request.getApellidoPaterno().length() > 50) {
-            throw new RuntimeException("El apellido paterno no puede exceder los 50 caracteres");
-        }
-        if (request.getApellidoMaterno() != null && request.getApellidoMaterno().length() > 50) {
-            throw new RuntimeException("El apellido materno no puede exceder los 50 caracteres");
-        }
-        if (request.getCorreo().length() > 255) {
-            throw new RuntimeException("El correo no puede exceder los 255 caracteres");
-        }
-        if (request.getTelefono().length() != 10) {
-            throw new RuntimeException("El teléfono debe tener exactamente 10 caracteres");
+        if (request.getNombre().length() > 50 ||
+            request.getApellidoPaterno().length() > 50 ||
+            (request.getApellidoMaterno() != null && request.getApellidoMaterno().length() > 50) ||
+            request.getCorreo().length() > 255 ||
+            request.getTelefono().length() != 10) {
+            throw new RuntimeException("Tamaño de los campos excedido");
         }
 
         // ver si escribieron bien el email con arroba y eso
@@ -201,7 +215,7 @@ public class UsuariosService {
 
         // que no repitan el mismo correo en otra cuenta
         if (usuariosRepository.correoUsado(request.getCorreo(), idUsuario)) {
-            throw new RuntimeException("El correo ya está registrado en otra cuenta");
+            throw new RuntimeException("El nuevo correo electrónico proporcionado ya pertenece a otro usuario");
         }
 
         UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);
@@ -232,9 +246,17 @@ public class UsuariosService {
     }
 
     public String changeStatus(int idUsuario, String token) {
-        int idRol = jwtUtils.getIdRolFromJwtToken(token);
+        if (!jwtUtils.validateJwtToken(token)) {
+            throw new RuntimeException("Token JWT no proporcionado o inválido");
+        }
+
+        Integer idRol = jwtUtils.getIdRolFromJwtToken(token);
+        if (idUsuario <= 0 || idRol == null || idRol <= 0) {
+            throw new RuntimeException("Faltan datos obligatorios (idUsuario, idRol)");
+        }
+
         if (idRol != 1) {
-            throw new RuntimeException("Acceso denegado: Solo los administradores pueden cambiar el estatus de un usuario");
+            throw new RuntimeException("El usuario que solicita la acción no tiene rol de administrador");
         }
 
         UsuariosEntity user = usuariosRepository.findById(idUsuario).orElse(null);

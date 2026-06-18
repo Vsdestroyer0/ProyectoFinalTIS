@@ -32,19 +32,18 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public SesionUsuarioDTO autenticar(String username, String password) {
-        System.out.println("El puñetas del " + username + " y su contraseña mugrienta " + password);
         UsuariosEntity user = usuariosRepository.findByUsername(username);
 
         if (user == null) {
-            throw new RuntimeException("Usuario no encontrado");
+            throw new RuntimeException("Credenciales incorrectas");
         }
 
         if (!user.isEstatus()) {
-            throw new RuntimeException("El usuario está inactivo");
+            throw new RuntimeException("El usuario está registrado pero su estatus es inactivo");
         }
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Contraseña inválida");
+            throw new RuntimeException("Credenciales incorrectas");
         }
 
         String token = jwtUtils.generateTokenFromUsername(user.getUsername(), user.getIdRol(), user.getIdUsuario());

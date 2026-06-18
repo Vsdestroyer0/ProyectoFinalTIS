@@ -16,29 +16,58 @@ public class VehiculosController {
     @Autowired
     private VehiculosService service;
 
+    private ResponseEntity<?> handleException(RuntimeException e) {
+        String msg = e.getMessage();
+        if (msg == null) {
+            return ResponseEntity.status(400).body("Error de validación");
+        }
+        if (msg.contains("Token JWT")) {
+            return ResponseEntity.status(401).body(msg);
+        }
+        if (msg.contains("Acceso denegado") || msg.contains("Intento de actualizar")) {
+            return ResponseEntity.status(403).body(msg);
+        }
+        if (msg.contains("Vehículo no encontrado")) {
+            return ResponseEntity.status(404).body(msg);
+        }
+        if (msg.contains("Ya existe") || msg.contains("ya existe")) {
+            return ResponseEntity.status(409).body(msg);
+        }
+        if (msg.contains("límite") || msg.contains("simultáneamente")) {
+            return ResponseEntity.status(422).body(msg);
+        }
+        return ResponseEntity.status(400).body(msg);
+    }
+
     // endpoint para buscar los carros que tiene un usuario
     @GetMapping("/{idUsuario}")
     public ResponseEntity<?> buscar(@PathVariable Integer idUsuario,
-                                    @RequestHeader("Authorization") String authHeader) {
+                                    @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token JWT no proporcionado o inválido");
+            }
             String token = authHeader.substring(7);
             List<VehiculoResponseDTO> vehiculos = service.buscarPorUsuario(idUsuario, token);
             return ResponseEntity.ok(vehiculos);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return handleException(e);
         }
     }
 
     // endpoint para guardar un carro nuevo
     @PostMapping
     public ResponseEntity<?> registrar(@RequestBody VehiculoRequestDTO request,
-                                       @RequestHeader("Authorization") String authHeader) {
+                                       @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token JWT no proporcionado o inválido");
+            }
             String token = authHeader.substring(7);
             String respuesta = service.registrar(request, token);
             return ResponseEntity.ok(respuesta);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -46,13 +75,16 @@ public class VehiculosController {
     @PutMapping("/{idVehiculo}")
     public ResponseEntity<?> editar(@PathVariable Integer idVehiculo,
                                     @RequestBody VehiculoRequestDTO request,
-                                    @RequestHeader("Authorization") String authHeader) {
+                                    @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token JWT no proporcionado o inválido");
+            }
             String token = authHeader.substring(7);
             String respuesta = service.editar(idVehiculo, request, token);
             return ResponseEntity.ok(respuesta);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -60,13 +92,16 @@ public class VehiculosController {
     @PatchMapping("/{idVehiculo}/estatus")
     public ResponseEntity<?> cambiarEstatus(@PathVariable Integer idVehiculo,
                                             @RequestParam Integer idUsuario,
-                                            @RequestHeader("Authorization") String authHeader) {
+                                            @RequestHeader(value = "Authorization", required = false) String authHeader) {
         try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(401).body("Token JWT no proporcionado o inválido");
+            }
             String token = authHeader.substring(7);
             String respuesta = service.cambiarEstatus(idVehiculo, idUsuario, token);
             return ResponseEntity.ok(respuesta);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return handleException(e);
         }
     }
 
