@@ -185,10 +185,11 @@ public class UsuariosService {
             throw new RuntimeException("Token JWT no proporcionado o inválido");
         }
 
+        //comente este cambio porque tiene metodos que no estan en el DTO de ActualizarUsuarioDTO y no es necesario validar esos campos aqui porque no se pueden editar
         // Detect editing protected fields
-        if (request.getUsername() != null || request.getPassword() != null || request.getClaveUsuario() != null) {
+      /*   if (request.getUsername() != null || request.getPassword() != null || request.getClaveUsuario() != null) {
             throw new RuntimeException("Intento de editar campos protegidos (usuario, contraseña, clave del usuario)");
-        }
+        } */
 
         // ver que no manden cosas vacias o nulas
         if (request.getNombre() == null || request.getNombre().trim().isEmpty() ||
