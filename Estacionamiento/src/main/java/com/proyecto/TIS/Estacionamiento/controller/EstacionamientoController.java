@@ -20,6 +20,21 @@ public class EstacionamientoController {
     @Autowired
     private EstacionamientoService service;
 
+    // helper para mapear las excepciones manuales a los codigos http correspondientes
+    private ResponseEntity<?> handleException(Exception e) {
+        String msg = e.getMessage();
+        if (msg == null) {
+            return ResponseEntity.status(400).body("Error de validación");
+        }
+        if (msg.contains("Token") || msg.contains("expirado") || msg.contains("JWT") || msg.contains("autenticación")) {
+            return ResponseEntity.status(401).body(msg);
+        }
+        if (msg.contains("administrador") || msg.contains("No tienes permiso") || msg.contains("Acceso denegado")) {
+            return ResponseEntity.status(403).body(msg);
+        }
+        return ResponseEntity.status(400).body(msg);
+    }
+
     // endpoint para meter el carro
     @PostMapping("/entrada")
     public ResponseEntity<?> registrarEntrada(@RequestBody EntradaDTO dto,
@@ -39,7 +54,7 @@ public class EstacionamientoController {
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -66,7 +81,7 @@ public class EstacionamientoController {
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return handleException(e);
         }
     }
 
@@ -81,7 +96,7 @@ public class EstacionamientoController {
             List<Espacio> espacios = service.consultarEspacios(token);
             return ResponseEntity.ok(espacios);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return handleException(e);
         }
     }
 }

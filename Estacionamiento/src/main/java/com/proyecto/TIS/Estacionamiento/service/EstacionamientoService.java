@@ -42,6 +42,14 @@ public class EstacionamientoService {
 
     // Aca registramos la entrada del carro
     public Movimiento registrarEntrada(EntradaDTO dto, String token) throws Exception {
+        if (!jwtUtils.validateJwtToken(token)) {
+            throw new Exception("Token JWT no proporcionado, inválido o expirado");
+        }
+        Integer idRol = jwtUtils.getIdRolFromJwtToken(token);
+        if (idRol == null || idRol != 1) {
+            throw new Exception("Acceso denegado: El usuario autenticado que realiza la petición no tiene el rol de administrador");
+        }
+
         // validamos que no falte ni un dato pq sino truena
         if (dto.getClaveU() == null || dto.getClaveU().trim().isEmpty()) {
             throw new Exception("La clave del usuario es obligatoria");
@@ -166,6 +174,14 @@ public class EstacionamientoService {
 
     // esto es para cuando ya se van
     public Movimiento registrarSalida(SalidaDTO dto, String token) throws Exception {
+        if (!jwtUtils.validateJwtToken(token)) {
+            throw new Exception("Token JWT no proporcionado, inválido o expirado");
+        }
+        Integer idRol = jwtUtils.getIdRolFromJwtToken(token);
+        if (idRol == null || idRol != 1) {
+            throw new Exception("Acceso denegado: El usuario autenticado que realiza la petición no tiene el rol de administrador");
+        }
+
         // ver que manden todo lo que pide la peticion
         if (dto.getClaveU() == null || dto.getClaveU().trim().isEmpty()) {
             throw new Exception("La clave del usuario es obligatoria");
@@ -221,6 +237,10 @@ public class EstacionamientoService {
         if (idUsuarioVehiculo == null || !idUsuarioVehiculo.equals(idUsuario)) {
             throw new Exception("El vehículo no pertenece al usuario especificado");
         }
+        Boolean estatusVehicle = (Boolean) vehicleResponse.get("estatus");
+        if (estatusVehicle == null || !estatusVehicle) {
+            throw new Exception("El vehículo está inactivo");
+        }
         Integer idVehiculo = (Integer) vehicleResponse.get("idVehiculo");
 
         // buscar cuando entro para poder cobrarle
@@ -247,7 +267,11 @@ public class EstacionamientoService {
     // solo ver los cajones libres
     public List<Espacio> consultarEspacios(String token) throws Exception {
         if (!jwtUtils.validateJwtToken(token)) {
-            throw new Exception("Acceso denegado: Token inválido o expirado");
+            throw new Exception("Token JWT no proporcionado, inválido o expirado");
+        }
+        Integer idRol = jwtUtils.getIdRolFromJwtToken(token);
+        if (idRol == null || idRol != 1) {
+            throw new Exception("Acceso denegado: El usuario autenticado que realiza la petición no tiene el rol de administrador");
         }
         return espacioRepository.obtenerEspaciosDisponibles();
     }
