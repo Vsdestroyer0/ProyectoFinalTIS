@@ -21,7 +21,7 @@ public class VehiculosController {
         if (msg == null) {
             return ResponseEntity.status(400).body("Error de validación");
         }
-        if (msg.contains("Token JWT")) {
+        if (msg.contains("Token") || msg.contains("expirado") || msg.contains("JWT")) {
             return ResponseEntity.status(401).body(msg);
         }
         if (msg.contains("Acceso denegado") || msg.contains("Intento de actualizar")) {
